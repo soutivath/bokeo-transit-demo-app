@@ -64,6 +64,12 @@ body {
     border-radius: 0;
     box-shadow: none;
   }
+  .bottom-nav {
+    position: fixed;
+  }
+  .screen-content {
+    padding-bottom: calc(140px + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 .status-bar {
@@ -103,7 +109,7 @@ body {
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px));
 }
 .screen-content::-webkit-scrollbar { display: none; }
 
