@@ -73,8 +73,8 @@ body {
 }
 
 .status-bar {
-  height: 54px;
-  padding: 14px 24px 0;
+  height: 44px;
+  padding: 10px 24px 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -84,6 +84,8 @@ body {
   top: 0; left: 0; right: 0;
   z-index: 100;
   color: white;
+  background: var(--primary);
+  transition: background 0.2s, color 0.2s;
 }
 .status-bar.dark { color: var(--text); }
 .status-icons { display: flex; gap: 6px; align-items: center; }
@@ -167,15 +169,10 @@ body {
 
 .home-header {
   background: linear-gradient(135deg, rgba(14,165,233,0.85) 0%, rgba(2,132,199,0.9) 100%), url('assets/banner.png') center/cover no-repeat;
-  padding: 60px 20px 24px;
+  padding: 50px 20px 24px;
   color: white;
   border-radius: 0 0 28px 28px;
   position: relative;
-}
-.home-header::after {
-  content: '';
-  position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
-  background: repeating-linear-gradient(90deg, var(--accent) 0px, var(--accent) 4px, transparent 4px, transparent 6px, rgba(212,160,23,0.4) 6px, rgba(212,160,23,0.4) 8px, transparent 8px, transparent 12px);
 }
 .home-greeting { font-size: 14px; opacity: 0.85; margin-bottom: 4px; }
 .home-title { font-size: 24px; font-weight: 800; margin-bottom: 16px; letter-spacing: -0.3px; }
@@ -252,6 +249,7 @@ body {
 .badge-bus { background: var(--primary-light); color: var(--primary); }
 .badge-van { background: #FEF3C7; color: #B45309; }
 .badge-boat { background: #DBEAFE; color: #1D4ED8; }
+.badge-ferry { background: #E0E7FF; color: #4338CA; }
 .route-name { font-size: 16px; font-weight: 700; }
 .route-arrow { color: var(--accent); margin: 0 6px; }
 .route-details {
@@ -277,11 +275,6 @@ body {
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   padding: 60px 20px 20px; color: white;
   border-radius: 0 0 28px 28px; position: relative;
-}
-.booking-header::after {
-  content: '';
-  position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
-  background: repeating-linear-gradient(90deg, var(--accent) 0px, var(--accent) 4px, transparent 4px, transparent 6px, rgba(212,160,23,0.4) 6px, rgba(212,160,23,0.4) 8px, transparent 8px, transparent 12px);
 }
 .booking-header h1 { font-size: 22px; font-weight: 700; }
 .booking-tabs {
@@ -526,11 +519,6 @@ body {
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   padding: 60px 20px 20px; color: white; position: relative;
 }
-.map-header::after {
-  content: '';
-  position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
-  background: repeating-linear-gradient(90deg, var(--accent) 0px, var(--accent) 4px, transparent 4px, transparent 6px, rgba(212,160,23,0.4) 6px, rgba(212,160,23,0.4) 8px, transparent 8px, transparent 12px);
-}
 .map-header h1 { font-size: 22px; font-weight: 700; }
 .map-container {
   flex: 1; position: relative; background: #E0F2FE;
@@ -583,11 +571,6 @@ body {
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
   padding: 60px 20px 30px; color: white; text-align: center;
   border-radius: 0 0 28px 28px; position: relative;
-}
-.profile-header::after {
-  content: '';
-  position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
-  background: repeating-linear-gradient(90deg, var(--accent) 0px, var(--accent) 4px, transparent 4px, transparent 6px, rgba(212,160,23,0.4) 6px, rgba(212,160,23,0.4) 8px, transparent 8px, transparent 12px);
 }
 .profile-avatar {
   width: 72px; height: 72px; border-radius: 50%;
@@ -686,6 +669,8 @@ body {
 .service-card:nth-child(2) { animation-delay: 0.05s; }
 .service-card:nth-child(3) { animation-delay: 0.1s; }
 .service-card:nth-child(4) { animation-delay: 0.15s; }
+.service-card:nth-child(5) { animation-delay: 0.2s; }
+.service-card:nth-child(6) { animation-delay: 0.25s; }
 
 .taxi-step.active .taxi-step-icon { animation: pulse 1.5s ease-in-out infinite; }
 @keyframes pulse {
@@ -760,7 +745,8 @@ body {
             <option value="">ເລືອກປະເພດ</option>
             <option value="ລົດເມ">🚌 ລົດເມ</option>
             <option value="ລົດຕູ້">🚐 ລົດຕູ້</option>
-            <option value="ເຮືອ">🚤 ເຮືອ</option>
+            <option value="ເຮືອຊ້າໂດຍສານ">🚤 ເຮືອຊ້າໂດຍສານ</option>
+            <option value="ເຮືອຂ້າມຂອງ">⛴️ ເຮືອຂ້າມຂອງ ຫ້ວຍຊາຍ-ຊຽງຂວາງ</option>
           </select>
           <div class="form-error" id="errType">ກະລຸນາເລືອກ</div>
         </div>
@@ -777,6 +763,7 @@ body {
               <option value="ສະຖານີລົດໄຟບໍເຕັນ">ສະຖານີລົດໄຟບໍເຕັນ</option>
               <option value="ປາກແດງ">ປາກແດງ</option>
               <option value="ຫຼວງພະບາງ">ຫຼວງພະບາງ</option>
+              <option value="ຊຽງຂວາງ">ຊຽງຂວາງ</option>
             </select>
             <div class="form-error" id="errFrom">ກະລຸນາເລືອກ</div>
           </div>
@@ -792,6 +779,7 @@ body {
               <option value="ສະຖານີລົດໄຟບໍເຕັນ">ສະຖານີລົດໄຟບໍເຕັນ</option>
               <option value="ປາກແດງ">ປາກແດງ</option>
               <option value="ຫຼວງພະບາງ">ຫຼວງພະບາງ</option>
+              <option value="ຊຽງຂວາງ">ຊຽງຂວາງ</option>
             </select>
             <div class="form-error" id="errTo">ກະລຸນາເລືອກ</div>
           </div>
@@ -1099,8 +1087,9 @@ body {
     { id: 8, from: 'ຫ້ວຍຊາຍ', to: 'ນະຄອນຫຼວງ', type: 'ລົດຕູ້', times: ['07:00','19:00'], price: 400000 },
     { id: 9, from: 'ຫ້ວຍຊາຍ', to: 'ສະຖານີລົດໄຟນາເຕີຍ', type: 'ລົດຕູ້', times: ['08:30','11:30','15:00'], price: 120000 },
     { id: 10, from: 'ຫ້ວຍຊາຍ', to: 'ສະຖານີລົດໄຟບໍເຕັນ', type: 'ລົດຕູ້', times: ['07:30','10:30','15:30'], price: 100000 },
-    { id: 11, from: 'ຫ້ວຍຊາຍ', to: 'ປາກແດງ', type: 'ເຮືອ', times: ['08:00','13:00'], price: 400000 },
-    { id: 12, from: 'ຫ້ວຍຊາຍ', to: 'ຫຼວງພະບາງ', type: 'ເຮືອ', times: ['08:00'], price: 600000 }
+    { id: 11, from: 'ຫ້ວຍຊາຍ', to: 'ປາກແດງ', type: 'ເຮືອຊ້າໂດຍສານ', times: ['08:00','13:00'], price: 400000 },
+    { id: 12, from: 'ຫ້ວຍຊາຍ', to: 'ຫຼວງພະບາງ', type: 'ເຮືອຊ້າໂດຍສານ', times: ['08:00'], price: 600000 },
+    { id: 13, from: 'ຫ້ວຍຊາຍ', to: 'ຊຽງຂວາງ', type: 'ເຮືອຂ້າມຂອງ', times: ['08:00','09:00','10:00','11:00','13:00','14:00','15:00','16:00'], price: 30000 }
   ];
 
   var STOPS_INFO = [
@@ -1111,14 +1100,16 @@ body {
     { name: 'ສະຖານີລົດໄຟນາເຕີຍ', nextBus: '08:00', nextBoat: '—', busPrice: '80,000', boatPrice: '—' },
     { name: 'ສະຖານີລົດໄຟບໍເຕັນ', nextBus: '07:00', nextBoat: '—', busPrice: '70,000', boatPrice: '—' },
     { name: 'ປາກແດງ', nextBus: '—', nextBoat: '08:00', busPrice: '—', boatPrice: '400,000' },
-    { name: 'ຫຼວງພະບາງ', nextBus: '—', nextBoat: '08:00', busPrice: '—', boatPrice: '600,000' }
+    { name: 'ຫຼວງພະບາງ', nextBus: '—', nextBoat: '08:00', busPrice: '—', boatPrice: '600,000' },
+    { name: 'ຊຽງຂວາງ', nextBus: '—', nextBoat: '08:00', busPrice: '—', boatPrice: '30,000' }
   ];
 
   var SERVICES = [
     { icon: '🚕', img: 'assets/taxi-standard.png', cls: 'taxi', title: 'ລົດແທັກຊີ', desc: 'ເອີ້ນລົດແທັກຊີ', action: 'taxi' },
     { icon: '🚌', img: 'assets/bus.png', cls: 'bus', title: 'ປີ້ລົດເມ', desc: 'ຈອງປີ້ລົດເມ', action: 'bus' },
-    { icon: '🚐', img: 'assets/bus.png', cls: 'bus', title: 'ປີ້ລົດຕູ້', desc: 'ຈອງປີ້ລົດຕູ້', action: 'van' },
-    { icon: '🚤', img: 'assets/boat.png', cls: 'boat', title: 'ປີ້ເຮືອ', desc: 'ຈອງປີ້ເຮືອ', action: 'boat' },
+    { icon: '🚐', img: 'assets/van.png', cls: 'bus', title: 'ປີ້ລົດຕູ້', desc: 'ຈອງປີ້ລົດຕູ້', action: 'van' },
+    { icon: '🚤', img: 'assets/boat.png', cls: 'boat', title: 'ປີ້ເຮືອຂ້າມຂອງ', desc: 'ຈອງປີ້ເຮືອ', action: 'boat' },
+    { icon: '⛴️', img: 'assets/slowboat.png', cls: 'boat', title: 'ເຮືອຊ້າໂດຍສານ', desc: 'ຈອງປີ້ເຮືອ', action: 'slowboat' },
     { icon: '🗺️', img: 'assets/map-icon.png', cls: 'map', title: 'ແຜນທີ່', desc: 'ເບິ່ງແຜນທີ່', action: 'map' }
   ];
 
@@ -1131,7 +1122,7 @@ body {
   var PRESET_TICKETS = [
     { route: '🚌 ຫ້ວຍຊາຍ → ຫຼວງນ້ຳທາ', status: 'confirmed', statusText: 'ຢືນຢັນແລ້ວ', date: '26/05/2026', time: '07:00', price: '100,000', id: 'BKT-2026-001', type: 'ລົດເມ', seats: '1' },
     { route: '🚐 ຫ້ວຍຊາຍ → ສ.ລົດໄຟບໍເຕັນ', status: 'confirmed', statusText: 'ຢືນຢັນແລ້ວ', date: '27/05/2026', time: '10:30', price: '100,000', id: 'BKT-2026-002', type: 'ລົດຕູ້', seats: '1' },
-    { route: '🚤 ຫ້ວຍຊາຍ → ຫຼວງພະບາງ', status: 'pending', statusText: 'ລໍຖ້າ', date: '28/05/2026', time: '08:00', price: '600,000', id: 'BKT-2026-003', type: 'ເຮືອ', seats: '2' }
+    { route: '🚤 ຫ້ວຍຊາຍ → ຫຼວງພະບາງ', status: 'pending', statusText: 'ລໍຖ້າ', date: '28/05/2026', time: '08:00', price: '600,000', id: 'BKT-2026-003', type: 'ເຮືອຊ້າໂດຍສານ', seats: '2' }
   ];
 
   var currentTab = 0;
@@ -1187,9 +1178,30 @@ body {
     var navItems = document.querySelectorAll('.nav-item');
     navItems.forEach(function(item, i) { item.classList.toggle('active', i === idx); });
     var bar = document.getElementById('statusBar');
-    bar.classList.toggle('dark', idx === 0);
-    bar.style.color = idx === 0 ? '' : 'white';
+    if (idx === 0) {
+      bar.classList.add('dark');
+      bar.style.color = '';
+      updateHomeStatusBar();
+    } else {
+      bar.classList.remove('dark');
+      bar.style.color = 'white';
+      bar.style.background = '';
+    }
   }
+
+  function updateHomeStatusBar() {
+    var content = document.querySelector('#screenHome .screen-content');
+    var bar = document.getElementById('statusBar');
+    if (currentTab !== 0) return;
+    if (content.scrollTop > 160) {
+      bar.style.background = 'var(--bg)';
+      bar.style.color = 'var(--text)';
+    } else {
+      bar.style.background = 'transparent';
+      bar.style.color = 'white';
+    }
+  }
+  document.querySelector('#screenHome .screen-content').addEventListener('scroll', updateHomeStatusBar);
 
   document.querySelectorAll('.nav-item').forEach(function(item) {
     item.addEventListener('click', function() { switchTab(parseInt(item.dataset.tab)); });
@@ -1217,7 +1229,8 @@ body {
         if (s.action === 'taxi') { switchTab(2); }
         else if (s.action === 'bus') { switchTab(1); document.getElementById('bookType').value = 'ລົດເມ'; updateBookingForm(); }
         else if (s.action === 'van') { switchTab(1); document.getElementById('bookType').value = 'ລົດຕູ້'; updateBookingForm(); }
-        else if (s.action === 'boat') { switchTab(1); document.getElementById('bookType').value = 'ເຮືອ'; updateBookingForm(); }
+        else if (s.action === 'boat') { switchTab(1); document.getElementById('bookType').value = 'ເຮືອຂ້າມຂອງ'; updateBookingForm(); }
+        else if (s.action === 'slowboat') { switchTab(1); document.getElementById('bookType').value = 'ເຮືອຊ້າໂດຍສານ'; updateBookingForm(); }
         else if (s.action === 'map') switchTab(3);
       });
       grid.appendChild(card);
@@ -1230,7 +1243,7 @@ body {
     while (list.firstChild) list.removeChild(list.firstChild);
 
     var filtered = ROUTES.filter(function(r) {
-      if (r.type === 'ເຮືອ') return false;
+      if (r.type === 'ເຮືອຊ້າໂດຍສານ' || r.type === 'ເຮືອຂ້າມຂອງ') return false;
       if (filter && !(r.from.indexOf(filter) >= 0 || r.to.indexOf(filter) >= 0)) return false;
       if (typeFilter && r.type !== typeFilter) return false;
       return true;
