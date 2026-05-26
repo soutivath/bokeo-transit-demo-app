@@ -1,0 +1,1711 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ບໍ່ແກ້ວ Transit Pro</title>
+<link rel="icon" type="image/png" href="assets/splash.png">
+<link rel="apple-touch-icon" href="assets/splash.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #0EA5E9;
+  --primary-dark: #0284C7;
+  --primary-light: #E0F2FE;
+  --accent: #D4A017;
+  --accent-bright: #FFD766;
+  --accent-light: #FFF3CD;
+  --bg: #F0F9FF;
+  --card: #FFFFFF;
+  --text: #1A1A1A;
+  --text-muted: #374151;
+  --danger: #DC2626;
+  --success: #15803D;
+  --warning: #B45309;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --focus-ring: 0 0 0 4px rgba(14,165,233,0.15);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: 'Noto Sans Lao', 'DM Sans', 'Phetsarath OT', system-ui, sans-serif;
+  background: #E5E7EB;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.phone-frame {
+  width: 390px;
+  height: 844px;
+  background: var(--bg);
+  border-radius: 44px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 0 2px #1A1A1A;
+}
+
+@media (max-width: 430px) {
+  body { background: var(--bg); }
+  .phone-frame {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+
+.status-bar {
+  height: 54px;
+  padding: 14px 24px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  color: white;
+}
+.status-bar.dark { color: var(--text); }
+.status-icons { display: flex; gap: 6px; align-items: center; }
+.status-icons svg { width: 16px; height: 16px; }
+
+.screen {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--bg);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.screen.active { display: flex; opacity: 1; }
+@keyframes screenIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.screen.active .screen-content { animation: screenIn 0.3s ease; }
+.screen-content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+}
+.screen-content::-webkit-scrollbar { display: none; }
+
+#splash {
+  background: #4BA3E3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+.splash-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  animation: splashPulse 1.5s ease-in-out infinite;
+}
+@keyframes splashPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.02); opacity: 0.95; }
+}
+.splash-fade { animation: fadeOut 0.5s ease forwards; }
+@keyframes fadeOut { to { opacity: 0; } }
+
+.bottom-nav {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: calc(84px + env(safe-area-inset-bottom, 0px));
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  border-top: none;
+  box-shadow: 0 -8px 32px rgba(0,0,0,0.06);
+  z-index: 50;
+}
+.nav-item {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; cursor: pointer; position: relative;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-item:active { transform: scale(0.9); }
+.nav-item svg { width: 24px; height: 24px; color: var(--text-muted); transition: color 0.2s; }
+.nav-item span { font-size: 11px; color: var(--text-muted); font-weight: 500; transition: color 0.2s; }
+.nav-item.active svg { color: var(--primary); }
+.nav-item.active span { color: var(--primary); font-weight: 700; }
+.nav-item.active::before {
+  content: '';
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 32px; height: 3px;
+  background: var(--primary);
+  border-radius: 0 0 4px 4px;
+}
+
+.home-header {
+  background: linear-gradient(135deg, rgba(14,165,233,0.85) 0%, rgba(2,132,199,0.9) 100%), url('assets/banner.png') center/cover no-repeat;
+  padding: 60px 20px 24px;
+  color: white;
+  border-radius: 0 0 28px 28px;
+  position: relative;
+}
+.home-header::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+  background: repeating-linear-gradient(90deg, var(--accent) 0px, var(--accent) 4px, transparent 4px, transparent 6px, rgba(212,160,23,0.4) 6px, rgba(212,160,23,0.4) 8px, transparent 8px, transparent 12px);
+}
+.home-greeting { font-size: 14px; opacity: 0.85; margin-bottom: 4px; }
+.home-title { font-size: 24px; font-weight: 800; margin-bottom: 16px; letter-spacing: -0.3px; }
+.home-title .accent { color: var(--accent-bright); }
+.search-box {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.search-box input {
+  background: none; border: none; color: white;
+  font-size: 15px; width: 100%; outline: none; font-family: inherit;
+}
+.search-box input::placeholder { color: rgba(255,255,255,0.6); }
+.search-box svg { width: 20px; height: 20px; opacity: 0.7; flex-shrink: 0; }
+
+.section-title {
+  font-size: 17px; font-weight: 700;
+  padding: 20px 20px 12px;
+  color: var(--text);
+}
+.service-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; padding: 0 20px;
+}
+.service-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 20px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid #F3F4F6;
+  box-shadow: var(--shadow);
+}
+.service-card:active { transform: scale(0.96); }
+.service-icon {
+  width: 60px; height: 60px;
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 10px;
+  font-size: 26px;
+  overflow: hidden;
+}
+.service-icon img {
+  width: 48px; height: 48px;
+  object-fit: contain;
+}
+.service-icon.taxi { background: #FEF3C7; }
+.service-icon.bus { background: var(--primary-light); }
+.service-icon.boat { background: #DBEAFE; }
+.service-icon.map { background: #FCE7F3; }
+.service-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 2px; }
+.service-card p { font-size: 13px; color: var(--text-muted); }
+
+.route-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin: 0 20px 12px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(0,0,0,0.04);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.route-card:active { transform: scale(0.98); }
+.route-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.route-type-badge {
+  font-size: 13px; padding: 4px 12px; border-radius: 20px; font-weight: 600;
+  display: flex; align-items: center; gap: 4px;
+}
+.badge-bus { background: var(--primary-light); color: var(--primary); }
+.badge-van { background: #FEF3C7; color: #B45309; }
+.badge-boat { background: #DBEAFE; color: #1D4ED8; }
+.route-name { font-size: 16px; font-weight: 700; }
+.route-arrow { color: var(--accent); margin: 0 6px; }
+.route-details {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 10px; border-top: 1px solid #F3F4F6;
+}
+.route-times { display: flex; gap: 6px; flex-wrap: wrap; }
+.time-chip {
+  font-size: 14px; background: #F3F4F6; padding: 5px 12px;
+  border-radius: 20px; color: var(--text-muted); font-weight: 500;
+}
+.route-price { font-size: 20px; font-weight: 800; color: var(--primary); white-space: nowrap; }
+.route-price-unit { font-size: 14px; font-weight: 500; color: var(--text-muted); }
+.route-book-btn {
+  width: 100%; margin-top: 12px; padding: 10px;
+  background: var(--primary); color: white; border: none;
+  border-radius: var(--radius-sm); font-size: 14px; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: all 0.2s;
+}
+.route-book-btn:active { background: var(--primary-dark); }
+
+.booking-header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  padding: 60px 20px 20px; color: white;
+  border-radius: 0 0 28px 28px; position: relative;
+}
+.booking-header::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+  background: repeating-linear-gradient(90deg, var(--accent) 0px, var(--accent) 4px, transparent 4px, transparent 6px, rgba(212,160,23,0.4) 6px, rgba(212,160,23,0.4) 8px, transparent 8px, transparent 12px);
+}
+.booking-header h1 { font-size: 22px; font-weight: 700; }
+.booking-tabs {
+  display: flex; margin: 16px 20px 0;
+  background: #F3F4F6; border-radius: var(--radius-sm); padding: 3px;
+}
+.booking-tab {
+  flex: 1; padding: 12px; text-align: center;
+  font-size: 15px; font-weight: 600; border-radius: 8px;
+  cursor: pointer; transition: all 0.2s;
+  color: var(--text-muted); font-family: inherit; border: none; background: none;
+}
+.booking-tab.active {
+  background: white; color: var(--primary);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+.form-section { padding: 16px 20px; }
+.form-group { margin-bottom: 16px; }
+.form-label { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 6px; display: block; }
+.form-input, .form-select {
+  width: 100%; padding: 12px 14px;
+  border: 1.5px solid #E5E7EB; border-radius: var(--radius-sm);
+  font-size: 15px; font-family: inherit; color: var(--text);
+  background: white; transition: border-color 0.2s;
+  -webkit-appearance: none; appearance: none;
+}
+.form-input:focus, .form-select:focus { outline: none; border-color: var(--primary); box-shadow: var(--focus-ring); }
+.form-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236B7280' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px;
+}
+.form-error { font-size: 14px; color: var(--danger); margin-top: 4px; display: none; }
+.form-error.show { display: block; }
+.form-row { display: flex; gap: 12px; }
+.form-row .form-group { flex: 1; }
+
+.price-display {
+  background: var(--accent-light); border: 1px solid var(--accent);
+  border-radius: var(--radius-sm); padding: 14px;
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 16px;
+}
+.price-display .label { font-size: 14px; color: var(--text-muted); }
+.price-display .amount { font-size: 22px; font-weight: 800; color: var(--primary); }
+.price-display .currency { font-size: 13px; color: var(--text-muted); }
+
+.btn-primary {
+  width: 100%; padding: 14px;
+  background: var(--primary); color: white; border: none;
+  border-radius: var(--radius-sm); font-size: 16px; font-weight: 700;
+  cursor: pointer; font-family: inherit; transition: all 0.2s;
+}
+.btn-primary:active { background: var(--primary-dark); transform: scale(0.98); }
+.btn-primary:disabled { background: #9CA3AF; cursor: not-allowed; }
+
+.taxi-map {
+  position: relative; height: 260px; border-radius: var(--radius);
+  overflow: hidden; margin-bottom: 12px; box-shadow: var(--shadow);
+  background: #F0F4E8; cursor: crosshair;
+}
+.taxi-map-mode {
+  position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+  background: white; padding: 7px 18px; border-radius: 20px;
+  font-size: 14px; font-weight: 600; box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  z-index: 5; white-space: nowrap; pointer-events: none;
+}
+.taxi-map-mode.pickup-mode { color: var(--primary); border: 2px solid var(--primary); }
+.taxi-map-mode.dropoff-mode { color: var(--danger); border: 2px solid var(--danger); }
+.taxi-map-mode.done-mode { color: var(--primary); border: 2px solid var(--primary); }
+.taxi-map-pin {
+  position: absolute; z-index: 10; pointer-events: none;
+  transform: translate(-50%, -100%);
+  display: none;
+}
+.taxi-map-pin svg { filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3)); }
+.taxi-map-pin-label {
+  position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%);
+  font-size: 11px; font-weight: 700; color: white;
+  padding: 2px 8px; border-radius: 8px; white-space: nowrap;
+}
+.taxi-map-pin-label.pickup-label { background: var(--primary); }
+.taxi-map-pin-label.dropoff-label { background: var(--danger); }
+.taxi-map-line {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 5; pointer-events: none;
+}
+.taxi-map-place {
+  position: absolute; z-index: 3; pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+.taxi-map-place-label {
+  font-size: 10px; font-weight: 600; color: #555;
+  background: rgba(255,255,255,0.85); padding: 1px 5px; border-radius: 4px;
+  white-space: nowrap;
+}
+.taxi-distance-badge {
+  position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+  background: white; padding: 6px 16px; border-radius: 20px;
+  font-size: 14px; font-weight: 600; color: var(--text);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15); z-index: 6;
+  display: none; pointer-events: none;
+}
+.taxi-distance-badge.show { display: block; }
+.taxi-map-reset {
+  position: absolute; top: 10px; right: 10px; z-index: 6;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: white; border: none; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  cursor: pointer; font-size: 18px; display: none;
+  align-items: center; justify-content: center;
+}
+.taxi-map-reset.show { display: flex; }
+.taxi-route-box {
+  background: var(--card); border-radius: var(--radius); padding: 16px;
+  margin-bottom: 12px; box-shadow: var(--shadow); display: flex; gap: 14px;
+}
+.taxi-route-dots {
+  display: flex; flex-direction: column; align-items: center; padding: 6px 0; gap: 0;
+}
+.taxi-dot {
+  width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
+}
+.taxi-dot.pickup { background: var(--primary); }
+.taxi-dot.dropoff { background: var(--danger); }
+.taxi-dot-line {
+  width: 2px; height: 32px; background: #D1D5DB;
+}
+.taxi-route-fields { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+.taxi-route-input {
+  width: 100%; padding: 12px 14px; border: 1.5px solid #E5E7EB;
+  border-radius: var(--radius-sm); font-size: 15px; font-family: inherit;
+  color: var(--text); background: #F9FAFB; transition: border-color 0.2s;
+}
+.taxi-route-input:focus { outline: none; border-color: var(--primary); background: white; box-shadow: var(--focus-ring); }
+.taxi-car-options { display: flex; gap: 12px; margin-bottom: 16px; }
+.taxi-car-card {
+  flex: 1; background: var(--card); border: 2px solid #E5E7EB;
+  border-radius: var(--radius); padding: 14px; text-align: center;
+  cursor: pointer; transition: all 0.2s;
+}
+.taxi-car-card.active { border-color: var(--primary); background: var(--primary-light); }
+.taxi-car-card:active { transform: scale(0.96); }
+.taxi-car-emoji { font-size: 32px; margin-bottom: 6px; }
+.taxi-car-img { margin-bottom: 6px; }
+.taxi-car-img img { width: 100%; height: 48px; object-fit: contain; }
+.taxi-car-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+.taxi-car-price { font-size: 14px; color: var(--primary); font-weight: 700; }
+
+.taxi-status { display: none; padding: 20px 0; }
+.taxi-status.show { display: block; }
+.taxi-progress-bar {
+  height: 6px; background: #E5E7EB; border-radius: 3px; margin-bottom: 20px; overflow: hidden;
+}
+.taxi-progress-fill {
+  height: 100%; background: var(--primary); border-radius: 3px;
+  width: 0%; transition: width 1s ease;
+}
+.taxi-step {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 0; border-bottom: 1px solid #F3F4F6;
+  opacity: 0.3; transition: all 0.5s;
+}
+.taxi-step.active { opacity: 1; }
+.taxi-step.done { opacity: 0.5; }
+.taxi-step-icon {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: #F3F4F6;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+}
+.taxi-step.active .taxi-step-icon { background: var(--primary-light); }
+.taxi-step.done .taxi-step-icon { background: #E0F2FE; }
+.taxi-step-text { font-size: 15px; font-weight: 500; text-align: left; }
+.taxi-step-sub { font-size: 13px; color: var(--text-muted); }
+
+.taxi-driver-card {
+  background: var(--card); border-radius: var(--radius);
+  padding: 16px; margin: 16px 0; box-shadow: var(--shadow-lg);
+  display: none; gap: 14px; border: 1.5px solid rgba(14,165,233,0.15);
+}
+.taxi-driver-card.show { display: flex; align-items: center; }
+.driver-avatar {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--primary); color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 700;
+  object-fit: cover;
+}
+.driver-info { flex: 1; }
+.driver-info h4 { font-size: 16px; font-weight: 600; }
+.driver-info p { font-size: 14px; color: var(--text-muted); }
+.driver-rating { display: flex; align-items: center; gap: 4px; margin-top: 4px; font-size: 14px; color: var(--accent); }
+.driver-call-btn {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--primary); color: white; border: none;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; cursor: pointer; flex-shrink: 0;
+}
+.driver-call-btn:active { background: var(--primary-dark); }
+
+.overlay {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5); z-index: 150;
+  display: none; align-items: flex-end; justify-content: center;
+}
+.overlay.show { display: flex; }
+.overlay-card {
+  background: white; border-radius: 28px 28px 0 0;
+  padding: 32px 24px 40px; width: 100%;
+  text-align: center; animation: slideUp 0.3s ease;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.success-check {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: var(--primary-light);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px; animation: successPop 0.5s ease;
+}
+@keyframes successPop {
+  0% { transform: scale(0); } 60% { transform: scale(1.2); } 100% { transform: scale(1); }
+}
+.success-check svg { width: 36px; height: 36px; color: var(--primary); }
+.overlay-card h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.overlay-card .booking-id { font-size: 15px; color: var(--text-muted); margin-bottom: 16px; }
+.qr-box {
+  width: 120px; height: 120px; margin: 0 auto 16px;
+  background: white; border: 2px solid #E5E7EB;
+  border-radius: 12px; display: flex; align-items: center; justify-content: center;
+  padding: 8px;
+}
+.booking-summary {
+  background: #F9FAFB; border-radius: var(--radius-sm);
+  padding: 14px; margin-bottom: 20px; text-align: left;
+}
+.booking-summary-row {
+  display: flex; justify-content: space-between;
+  font-size: 14px; padding: 5px 0;
+}
+.booking-summary-row .label { color: var(--text-muted); }
+
+.map-header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  padding: 60px 20px 20px; color: white; position: relative;
+}
+.map-header::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+  background: repeating-linear-gradient(90deg, var(--accent) 0px, var(--accent) 4px, transparent 4px, transparent 6px, rgba(212,160,23,0.4) 6px, rgba(212,160,23,0.4) 8px, transparent 8px, transparent 12px);
+}
+.map-header h1 { font-size: 22px; font-weight: 700; }
+.map-container {
+  flex: 1; position: relative; background: #E0F2FE;
+  margin: 16px 20px; border-radius: var(--radius);
+  overflow: hidden; box-shadow: var(--shadow); min-height: 400px;
+}
+.map-marker {
+  position: absolute; cursor: pointer; z-index: 10; transition: transform 0.2s;
+}
+.map-marker:active { transform: scale(1.2); }
+.map-marker-dot {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--accent); border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 16px; font-weight: 700;
+}
+.map-marker-label {
+  position: absolute; top: 48px; left: 50%; transform: translateX(-50%);
+  white-space: nowrap; font-size: 13px; font-weight: 600;
+  background: white; padding: 3px 10px; border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+.map-popup {
+  position: absolute; background: white;
+  border-radius: var(--radius-sm); padding: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2); z-index: 20;
+  display: none; min-width: 180px;
+}
+.map-popup.show { display: block; }
+.map-popup h4 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.map-popup-row { font-size: 14px; color: var(--text-muted); padding: 3px 0; }
+.map-popup-close {
+  position: absolute; top: 4px; right: 4px;
+  font-size: 22px; cursor: pointer; color: var(--text-muted);
+  background: #F3F4F6; border: none; font-family: inherit;
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+}
+.map-legend {
+  padding: 12px 20px; display: flex; gap: 20px; justify-content: center;
+}
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--text-muted); }
+.legend-line { width: 24px; height: 3px; border-radius: 2px; }
+.legend-line.bus-line { background: var(--primary); border-top: 3px dashed var(--primary); height: 0; }
+.legend-line.boat-line { background: #1D4ED8; }
+
+.profile-header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  padding: 60px 20px 30px; color: white; text-align: center;
+  border-radius: 0 0 28px 28px; position: relative;
+}
+.profile-header::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+  background: repeating-linear-gradient(90deg, var(--accent) 0px, var(--accent) 4px, transparent 4px, transparent 6px, rgba(212,160,23,0.4) 6px, rgba(212,160,23,0.4) 8px, transparent 8px, transparent 12px);
+}
+.profile-avatar {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: var(--accent); color: var(--primary-dark);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; font-weight: 700; margin: 0 auto 10px;
+  border: 3px solid rgba(255,255,255,0.3);
+  object-fit: cover;
+}
+.profile-header h2 { font-size: 20px; font-weight: 700; }
+.profile-header p { font-size: 15px; opacity: 0.85; }
+
+.ticket-card {
+  background: var(--card); border-radius: var(--radius);
+  margin: 0 20px 12px; box-shadow: var(--shadow);
+  border: 1px solid #F3F4F6; overflow: hidden;
+  cursor: pointer; transition: all 0.2s;
+}
+.ticket-card:active { transform: scale(0.98); }
+.ticket-card-header {
+  padding: 14px 16px; display: flex;
+  justify-content: space-between; align-items: center;
+}
+.ticket-route { font-size: 16px; font-weight: 700; }
+.ticket-status {
+  font-size: 13px; padding: 4px 12px;
+  border-radius: 20px; font-weight: 600;
+}
+.status-confirmed { background: #DCFCE7; color: #15803D; }
+.status-pending { background: #FEF3C7; color: #92400E; }
+.status-cancelled { background: #FEE2E2; color: #B91C1C; }
+.ticket-card-body {
+  padding: 0 16px 14px; display: flex; gap: 16px;
+  font-size: 14px; color: var(--text-muted);
+}
+.ticket-detail { display: flex; align-items: center; gap: 4px; }
+.ticket-expand { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+.ticket-expand.open { max-height: 200px; }
+.ticket-expand-inner {
+  padding: 14px 16px; border-top: 1px solid #F3F4F6;
+  display: flex; align-items: center; gap: 16px;
+}
+.ticket-qr {
+  width: 80px; height: 80px; background: #F9FAFB;
+  border: 1px solid #E5E7EB; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 4px; flex-shrink: 0;
+}
+.ticket-full-info { font-size: 14px; color: var(--text-muted); }
+.ticket-full-info p { padding: 2px 0; }
+
+.menu-section { padding: 8px 20px; }
+.menu-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 0; border-bottom: 1px solid #F3F4F6;
+  cursor: pointer; transition: opacity 0.2s;
+}
+.menu-item:active { opacity: 0.6; }
+.menu-item:last-child { border-bottom: none; }
+.menu-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.menu-item-text { flex: 1; }
+.menu-item-text h4 { font-size: 16px; font-weight: 600; }
+.menu-item-text p { font-size: 14px; color: var(--text-muted); }
+.menu-chevron { color: var(--text-muted); font-size: 18px; }
+
+.btn-outline {
+  width: 100%; padding: 12px; background: none;
+  color: var(--danger); border: 1.5px solid var(--danger);
+  border-radius: var(--radius-sm); font-size: 15px; font-weight: 600;
+  cursor: pointer; font-family: inherit; margin: 8px 0 20px;
+  transition: all 0.2s;
+}
+.btn-outline:active { background: #FEE2E2; }
+
+.notif-badge {
+  position: absolute; top: 4px; right: 50%; transform: translateX(14px);
+  width: 8px; height: 8px; background: var(--danger);
+  border-radius: 50%; border: 2px solid white;
+}
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.route-card { animation: cardIn 0.35s ease both; }
+.route-card:nth-child(1) { animation-delay: 0s; }
+.route-card:nth-child(2) { animation-delay: 0.06s; }
+.route-card:nth-child(3) { animation-delay: 0.12s; }
+.route-card:nth-child(4) { animation-delay: 0.18s; }
+.route-card:nth-child(5) { animation-delay: 0.24s; }
+.service-card { animation: cardIn 0.3s ease both; }
+.service-card:nth-child(1) { animation-delay: 0s; }
+.service-card:nth-child(2) { animation-delay: 0.05s; }
+.service-card:nth-child(3) { animation-delay: 0.1s; }
+.service-card:nth-child(4) { animation-delay: 0.15s; }
+
+.taxi-step.active .taxi-step-icon { animation: pulse 1.5s ease-in-out infinite; }
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(14,165,233,0.3); }
+  50% { box-shadow: 0 0 0 8px rgba(14,165,233,0); }
+}
+
+.btn-primary:active, .route-book-btn:active { transform: scale(0.97); }
+.booking-tab:active, .menu-item:active, .map-popup-close:active { opacity: 0.6; }
+.search-box:focus-within { border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.22); }
+
+.back-btn {
+  display: flex; align-items: center; gap: 4px;
+  background: none; border: none; color: white; cursor: pointer;
+  font-family: inherit; font-size: 14px; font-weight: 500;
+  padding: 4px 0; margin-bottom: 6px; -webkit-tap-highlight-color: transparent;
+}
+.back-btn svg { width: 22px; height: 22px; }
+.back-btn:active { opacity: 0.7; }
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <div class="status-bar" id="statusBar">
+    <span id="statusTime">9:41</span>
+    <div class="status-icons">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 9l4-4 4 4"/><path d="M5 5v14"/><path d="M9 5h10a2 2 0 012 2v10a2 2 0 01-2 2H9"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0114.08 0"/><path d="M1.42 9a16 16 0 0121.16 0"/><path d="M8.53 16.11a6 6 0 016.95 0"/><circle cx="12" cy="20" r="1"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor"><rect x="1" y="7" width="20" height="10" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="3" y="9" width="12" height="6" rx="1" fill="currentColor"/><rect x="22" y="10" width="2" height="4" rx="0.5"/></svg>
+    </div>
+  </div>
+
+  <div class="screen active" id="splash">
+    <img src="assets/splash.png" alt="Bokeo Transit" class="splash-img">
+  </div>
+
+  <div class="screen" id="screenHome">
+    <div class="screen-content">
+      <div class="home-header">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+          <img src="assets/splash.png" alt="" style="width:44px;height:44px;border-radius:50%;border:2px solid rgba(255,255,255,0.3);object-fit:cover;">
+          <div>
+            <p class="home-greeting" style="margin-bottom:0">ສະບາຍດີ, ສົມໃຈ 👋</p>
+            <h1 class="home-title" style="margin-bottom:0">ບໍ່ແກ້ວ <span class="accent">ທຣານສິດ</span></h1>
+          </div>
+        </div>
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input type="text" placeholder="ຊອກຫາສາຍທາງ..." id="searchInput">
+        </div>
+      </div>
+      <p class="section-title">ບໍລິການ</p>
+      <div class="service-grid" id="serviceGrid"></div>
+      <p class="section-title">ສາຍທາງຍອດນິຍົມ</p>
+      <div id="routeList"></div>
+    </div>
+  </div>
+
+  <div class="screen" id="screenBooking">
+    <div class="screen-content">
+      <div class="booking-header">
+        <button class="back-btn" data-back="0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg> ກັບຄືນ</button>
+        <h1>ຈອງປີ້</h1>
+      </div>
+
+      <div class="form-section" id="bookingTicketForm">
+        <div class="form-group">
+          <label class="form-label">ປະເພດ</label>
+          <select class="form-select" id="bookType">
+            <option value="">ເລືອກປະເພດ</option>
+            <option value="ລົດເມ">🚌 ລົດເມ</option>
+            <option value="ລົດຕູ້">🚐 ລົດຕູ້</option>
+            <option value="ເຮືອ">🚤 ເຮືອ</option>
+          </select>
+          <div class="form-error" id="errType">ກະລຸນາເລືອກ</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">ຕົ້ນທາງ</label>
+            <select class="form-select" id="bookFrom">
+              <option value="">ເລືອກ</option>
+              <option value="ຫ້ວຍຊາຍ">ຫ້ວຍຊາຍ</option>
+              <option value="ຫຼວງນ້ຳທາ">ຫຼວງນ້ຳທາ</option>
+              <option value="ອຸດົມໄຊ">ອຸດົມໄຊ</option>
+              <option value="ນະຄອນຫຼວງ">ນະຄອນຫຼວງ</option>
+              <option value="ສະຖານີລົດໄຟນາເຕີຍ">ສະຖານີລົດໄຟນາເຕີຍ</option>
+              <option value="ສະຖານີລົດໄຟບໍເຕັນ">ສະຖານີລົດໄຟບໍເຕັນ</option>
+              <option value="ປາກແດງ">ປາກແດງ</option>
+              <option value="ຫຼວງພະບາງ">ຫຼວງພະບາງ</option>
+            </select>
+            <div class="form-error" id="errFrom">ກະລຸນາເລືອກ</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">ປາຍທາງ</label>
+            <select class="form-select" id="bookTo">
+              <option value="">ເລືອກ</option>
+              <option value="ຫ້ວຍຊາຍ">ຫ້ວຍຊາຍ</option>
+              <option value="ຫຼວງນ້ຳທາ">ຫຼວງນ້ຳທາ</option>
+              <option value="ອຸດົມໄຊ">ອຸດົມໄຊ</option>
+              <option value="ນະຄອນຫຼວງ">ນະຄອນຫຼວງ</option>
+              <option value="ສະຖານີລົດໄຟນາເຕີຍ">ສະຖານີລົດໄຟນາເຕີຍ</option>
+              <option value="ສະຖານີລົດໄຟບໍເຕັນ">ສະຖານີລົດໄຟບໍເຕັນ</option>
+              <option value="ປາກແດງ">ປາກແດງ</option>
+              <option value="ຫຼວງພະບາງ">ຫຼວງພະບາງ</option>
+            </select>
+            <div class="form-error" id="errTo">ກະລຸນາເລືອກ</div>
+          </div>
+        </div>
+        <div class="form-error" id="errSame" style="margin-top:-10px;margin-bottom:10px">ຕົ້ນທາງ ແລະ ປາຍທາງ ບໍ່ສາມາດຄືກັນ</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">ວັນທີ</label>
+            <input type="date" class="form-input" id="bookDate">
+            <div class="form-error" id="errDate">ກະລຸນາເລືອກ</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">ເວລາ</label>
+            <select class="form-select" id="bookTime">
+              <option value="">ເລືອກສາຍທາງກ່ອນ</option>
+            </select>
+            <div class="form-error" id="errTime">ກະລຸນາເລືອກ</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">ຈຳນວນບ່ອນນັ່ງ</label>
+          <select class="form-select" id="bookSeats">
+            <option value="1">1 ບ່ອນ</option>
+            <option value="2">2 ບ່ອນ</option>
+            <option value="3">3 ບ່ອນ</option>
+            <option value="4">4 ບ່ອນ</option>
+            <option value="5">5 ບ່ອນ</option>
+          </select>
+        </div>
+        <div class="price-display">
+          <div><div class="label">ລາຄາລວມ</div></div>
+          <div><span class="amount" id="totalPrice">0</span><span class="currency"> ກີບ</span></div>
+        </div>
+        <button class="btn-primary" id="btnConfirmBooking">ຢືນຢັນການຈອງ</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="screenTaxi">
+    <div class="screen-content">
+      <div class="booking-header">
+        <button class="back-btn" data-back="0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg> ກັບຄືນ</button>
+        <h1>ເອີ້ນແທັກຊີ</h1>
+      </div>
+      <div class="form-section">
+        <div class="taxi-map" id="taxiMap">
+          <svg width="100%" height="100%" viewBox="0 0 390 260" preserveAspectRatio="xMidYMid slice">
+            <rect width="390" height="260" fill="#E8EDE0"/>
+            <path d="M 0 30 C 15 70, 8 120, 12 170 C 18 210, 30 240, 45 260" fill="#B8D4F0" stroke="none"/>
+            <path d="M 0 30 C 15 70, 8 120, 12 170 C 18 210, 30 240, 45 260" fill="none" stroke="#8BB8E0" stroke-width="2"/>
+            <rect x="40" y="0" width="350" height="260" fill="#EEF1E6"/>
+            <!-- main roads -->
+            <rect x="40" y="45" width="350" height="8" fill="white" rx="1"/>
+            <rect x="40" y="120" width="350" height="8" fill="white" rx="1"/>
+            <rect x="40" y="195" width="350" height="6" fill="#F5F5F0" rx="1"/>
+            <rect x="95" y="0" width="8" height="260" fill="white" rx="1"/>
+            <rect x="195" y="0" width="8" height="260" fill="white" rx="1"/>
+            <rect x="295" y="0" width="6" height="260" fill="#F5F5F0" rx="1"/>
+            <!-- small roads -->
+            <rect x="145" y="52" width="4" height="68" fill="#F5F5F0" rx="1"/>
+            <rect x="245" y="52" width="4" height="68" fill="#F5F5F0" rx="1"/>
+            <rect x="103" y="80" width="92" height="4" fill="#F5F5F0" rx="1"/>
+            <rect x="203" y="80" width="92" height="4" fill="#F5F5F0" rx="1"/>
+            <rect x="145" y="128" width="4" height="67" fill="#F5F5F0" rx="1"/>
+            <rect x="245" y="128" width="4" height="67" fill="#F5F5F0" rx="1"/>
+            <rect x="103" y="158" width="92" height="4" fill="#F5F5F0" rx="1"/>
+            <rect x="203" y="158" width="92" height="4" fill="#F5F5F0" rx="1"/>
+            <!-- building blocks -->
+            <rect x="105" y="54" width="38" height="24" fill="#D9DDD0" rx="3"/>
+            <rect x="105" y="86" width="38" height="32" fill="#D5D9CC" rx="3"/>
+            <rect x="151" y="54" width="42" height="24" fill="#D2D6C8" rx="3"/>
+            <rect x="151" y="86" width="42" height="32" fill="#D9DDD0" rx="3"/>
+            <rect x="205" y="54" width="38" height="24" fill="#D5D9CC" rx="3"/>
+            <rect x="205" y="86" width="38" height="32" fill="#CFD3C6" rx="3"/>
+            <rect x="251" y="54" width="42" height="24" fill="#D9DDD0" rx="3"/>
+            <rect x="251" y="86" width="38" height="32" fill="#D2D6C8" rx="3"/>
+            <rect x="105" y="130" width="38" height="26" fill="#D2D6C8" rx="3"/>
+            <rect x="105" y="164" width="38" height="28" fill="#D9DDD0" rx="3"/>
+            <rect x="151" y="130" width="42" height="26" fill="#D9DDD0" rx="3"/>
+            <rect x="151" y="164" width="42" height="28" fill="#CFD3C6" rx="3"/>
+            <rect x="205" y="130" width="38" height="26" fill="#D5D9CC" rx="3"/>
+            <rect x="205" y="164" width="38" height="28" fill="#D9DDD0" rx="3"/>
+            <rect x="251" y="130" width="42" height="26" fill="#D2D6C8" rx="3"/>
+            <rect x="251" y="164" width="42" height="28" fill="#D5D9CC" rx="3"/>
+            <!-- park area -->
+            <rect x="305" y="54" width="70" height="64" fill="#C5DEBA" rx="5"/>
+            <circle cx="325" cy="76" r="8" fill="#A8CFA0" opacity="0.7"/>
+            <circle cx="345" cy="88" r="6" fill="#A8CFA0" opacity="0.7"/>
+            <circle cx="355" cy="70" r="7" fill="#A8CFA0" opacity="0.7"/>
+            <!-- road labels (tiny like google maps) -->
+            <text x="220" y="43" font-size="7" fill="#888" font-weight="500" text-anchor="middle">ถ.ຫ້ວຍຊາຍ-ຫຼວງນ້ຳທາ</text>
+            <text x="220" y="118" font-size="7" fill="#888" font-weight="500" text-anchor="middle">ถ.ແຄມຂອງ</text>
+          </svg>
+          <!-- place labels on map -->
+          <div class="taxi-map-place" style="left:30%;top:18%"><div class="taxi-map-place-label">🏪 ຕະຫຼາດ</div></div>
+          <div class="taxi-map-place" style="left:68%;top:18%"><div class="taxi-map-place-label">🛂 ດ່ານ</div></div>
+          <div class="taxi-map-place" style="left:88%;top:30%"><div class="taxi-map-place-label">🌳 ສວນ</div></div>
+          <div class="taxi-map-place" style="left:30%;top:52%"><div class="taxi-map-place-label">🏥 ໂຮງໝໍ</div></div>
+          <div class="taxi-map-place" style="left:55%;top:52%"><div class="taxi-map-place-label">🏛️ ຫ້ອງການ</div></div>
+          <div class="taxi-map-place" style="left:18%;top:78%"><div class="taxi-map-place-label">⛴️ ທ່າເຮືອ</div></div>
+          <div class="taxi-map-place" style="left:55%;top:78%"><div class="taxi-map-place-label">🏫 ໂຮງຮຽນ</div></div>
+          <div class="taxi-map-place" style="left:82%;top:72%"><div class="taxi-map-place-label">✈️ ສະໜາມບິນ</div></div>
+          <!-- SVG line between pins -->
+          <svg class="taxi-map-line" id="taxiMapLine"><line id="taxiRouteLine" stroke="#0EA5E9" stroke-width="3" stroke-dasharray="8 5" stroke-linecap="round" x1="0" y1="0" x2="0" y2="0" style="display:none"/></svg>
+          <!-- pins -->
+          <div class="taxi-map-pin" id="taxiPinPickup">
+            <svg width="30" height="40" viewBox="0 0 30 40"><path d="M15 0C6.7 0 0 6.7 0 15c0 11.3 15 25 15 25s15-13.7 15-25C30 6.7 23.3 0 15 0z" fill="#0EA5E9"/><circle cx="15" cy="14" r="6" fill="white"/></svg>
+            <div class="taxi-map-pin-label pickup-label">ຈຸດຮັບ</div>
+          </div>
+          <div class="taxi-map-pin" id="taxiPinDropoff">
+            <svg width="30" height="40" viewBox="0 0 30 40"><path d="M15 0C6.7 0 0 6.7 0 15c0 11.3 15 25 15 25s15-13.7 15-25C30 6.7 23.3 0 15 0z" fill="#DC2626"/><circle cx="15" cy="14" r="6" fill="white"/></svg>
+            <div class="taxi-map-pin-label dropoff-label">ຈຸດສົ່ງ</div>
+          </div>
+          <div class="taxi-map-mode pickup-mode" id="taxiMapMode">📍 ແຕະແຜນທີ່ເລືອກຈຸດຮັບ</div>
+          <div class="taxi-distance-badge" id="taxiDistBadge"></div>
+          <button class="taxi-map-reset" id="taxiMapReset">↺</button>
+        </div>
+        <div class="taxi-route-box">
+          <div class="taxi-route-dots">
+            <div class="taxi-dot pickup"></div>
+            <div class="taxi-dot-line"></div>
+            <div class="taxi-dot dropoff"></div>
+          </div>
+          <div class="taxi-route-fields">
+            <input type="text" class="taxi-route-input" placeholder="ແຕະແຜນທີ່ເລືອກຈຸດຮັບ" id="taxiPickup" readonly>
+            <input type="text" class="taxi-route-input" placeholder="ແຕະແຜນທີ່ເລືອກຈຸດສົ່ງ" id="taxiDropoff" readonly>
+          </div>
+        </div>
+        <label class="form-label">ເລືອກປະເພດລົດ</label>
+        <div class="taxi-car-options">
+          <div class="taxi-car-card active" id="carStandard" data-type="standard">
+            <div class="taxi-car-img"><img src="assets/taxi-standard.png" alt="ທຳມະດາ"></div>
+            <div class="taxi-car-name">ທຳມະດາ</div>
+            <div class="taxi-car-price">25,000 ກີບ</div>
+          </div>
+          <div class="taxi-car-card" id="carVip" data-type="vip">
+            <div class="taxi-car-img"><img src="assets/taxi-vip.png" alt="ພິເສດ"></div>
+            <div class="taxi-car-name">ພິເສດ</div>
+            <div class="taxi-car-price">40,000 ກີບ</div>
+          </div>
+        </div>
+        <div class="price-display">
+          <div><div class="label">ລາຄາປະມານ</div></div>
+          <div><span class="amount" id="taxiPrice">25,000</span><span class="currency"> ກີບ</span></div>
+        </div>
+        <button class="btn-primary" id="btnCallTaxi">🚕 ເອີ້ນແທັກຊີ</button>
+        <div class="taxi-status" id="taxiStatus">
+          <div class="taxi-progress-bar"><div class="taxi-progress-fill" id="taxiProgressFill"></div></div>
+          <div class="taxi-step" id="taxiStep1">
+            <div class="taxi-step-icon">🔍</div>
+            <div><div class="taxi-step-text">ກຳລັງຊອກຫາຄົນຂັບ...</div><div class="taxi-step-sub">ກະລຸນາລໍຖ້າ</div></div>
+          </div>
+          <div class="taxi-step" id="taxiStep2">
+            <div class="taxi-step-icon">🚗</div>
+            <div><div class="taxi-step-text">ຄົນຂັບກຳລັງມາ</div><div class="taxi-step-sub">ປະມານ 3 ນາທີ</div></div>
+          </div>
+          <div class="taxi-step" id="taxiStep3">
+            <div class="taxi-step-icon">✅</div>
+            <div><div class="taxi-step-text">ຮອດແລ້ວ!</div><div class="taxi-step-sub">ຄົນຂັບລໍຖ້າຢູ່</div></div>
+          </div>
+          <div class="taxi-driver-card" id="taxiDriverCard">
+            <img class="driver-avatar" src="assets/avatar.png" alt="ຄົນຂັບ">
+            <div class="driver-info">
+              <h4>ທ. ສົມພອນ</h4>
+              <p>Toyota Vios ສີຂາວ • ບກ-1234</p>
+              <div class="driver-rating">⭐ 4.8</div>
+            </div>
+            <button class="driver-call-btn">📞</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="screenMap">
+    <div class="screen-content">
+      <div class="map-header">
+        <button class="back-btn" data-back="0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg> ກັບຄືນ</button>
+        <h1>ແຜນທີ່ບໍ່ແກ້ວ</h1>
+      </div>
+      <div class="map-container" id="mapContainer">
+        <svg width="100%" height="100%" viewBox="0 0 350 420" preserveAspectRatio="xMidYMid meet">
+          <rect width="350" height="420" fill="#E0F2FE"/>
+          <path d="M 60 0 C 50 60, 30 100, 40 160 C 50 220, 70 260, 90 300 C 110 340, 160 380, 220 420" fill="none" stroke="#BBDEFB" stroke-width="28" stroke-linecap="round"/>
+          <path d="M 60 0 C 50 60, 30 100, 40 160 C 50 220, 70 260, 90 300 C 110 340, 160 380, 220 420" fill="none" stroke="#90CAF9" stroke-width="16" stroke-linecap="round"/>
+          <path d="M 80 80 C 120 120, 180 160, 240 200 C 260 220, 270 260, 260 300" fill="none" stroke="#A5D6A7" stroke-width="5" stroke-dasharray="10 5" stroke-linecap="round"/>
+          <path d="M 70 70 C 55 130, 45 180, 55 250 C 65 290, 100 330, 140 370" fill="none" stroke="#1D4ED8" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+          <path d="M 80 80 C 120 120, 180 160, 240 200 C 260 220, 270 260, 260 300" fill="none" stroke="#0EA5E9" stroke-width="3" stroke-dasharray="8 4" stroke-linecap="round" opacity="0.7"/>
+          <path d="M 120 10 C 200 20, 300 80, 320 180 C 340 280, 300 360, 240 420" fill="none" stroke="#C8E6C9" stroke-width="2" stroke-dasharray="4 4"/>
+        </svg>
+        <div class="map-marker" style="top:8%;left:12%;" data-stop="0">
+          <div class="map-marker-dot">ຫ</div>
+          <div class="map-marker-label">ຫ້ວຍຊາຍ</div>
+        </div>
+        <div class="map-marker" style="top:18%;left:55%;" data-stop="1">
+          <div class="map-marker-dot">ນ</div>
+          <div class="map-marker-label">ຫຼວງນ້ຳທາ</div>
+        </div>
+        <div class="map-marker" style="top:35%;left:65%;" data-stop="2">
+          <div class="map-marker-dot">ອ</div>
+          <div class="map-marker-label">ອຸດົມໄຊ</div>
+        </div>
+        <div class="map-marker" style="top:12%;left:82%;" data-stop="5">
+          <div class="map-marker-dot">ບ</div>
+          <div class="map-marker-label">ລົດໄຟບໍເຕັນ</div>
+        </div>
+        <div class="map-marker" style="top:28%;left:42%;" data-stop="4">
+          <div class="map-marker-dot">ນ</div>
+          <div class="map-marker-label">ລົດໄຟນາເຕີຍ</div>
+        </div>
+        <div class="map-marker" style="top:55%;left:35%;" data-stop="6">
+          <div class="map-marker-dot">ປ</div>
+          <div class="map-marker-label">ປາກແດງ</div>
+        </div>
+        <div class="map-marker" style="top:72%;left:25%;" data-stop="7">
+          <div class="map-marker-dot">ລ</div>
+          <div class="map-marker-label">ຫຼວງພະບາງ</div>
+        </div>
+        <div class="map-marker" style="top:92%;left:55%;" data-stop="3">
+          <div class="map-marker-dot">ວ</div>
+          <div class="map-marker-label">ນະຄອນຫຼວງ</div>
+        </div>
+        <div class="map-popup" id="mapPopup">
+          <button class="map-popup-close" id="mapPopupClose">&times;</button>
+          <h4 id="popupTitle"></h4>
+          <div id="popupContent"></div>
+        </div>
+      </div>
+      <div class="map-legend">
+        <div class="legend-item"><div class="legend-line bus-line"></div><span>ເສັ້ນລົດເມ</span></div>
+        <div class="legend-item"><div class="legend-line" style="background:#B45309"></div><span>ເສັ້ນລົດຕູ້</span></div>
+        <div class="legend-item"><div class="legend-line boat-line"></div><span>ເສັ້ນເຮືອ</span></div>
+        <div class="legend-item"><div class="map-marker-dot" style="width:16px;height:16px;font-size:8px;border-width:2px">•</div><span>ຈຸດຈອດ</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" id="screenProfile">
+    <div class="screen-content">
+      <div class="profile-header">
+        <button class="back-btn" data-back="0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg> ກັບຄືນ</button>
+        <img class="profile-avatar" src="assets/avatar.png" alt="ສົມໃຈ">
+        <h2>ສົມໃຈ ວົງສະຫວັນ</h2>
+        <p>020 55 123 456</p>
+      </div>
+      <p class="section-title">ປີ້ຂອງຂ້ອຍ</p>
+      <div id="myTickets"></div>
+      <div class="menu-section" id="profileMenu"></div>
+      <div style="padding:0 20px;">
+        <button class="btn-outline" id="btnLogout">ອອກຈາກລະບົບ</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="successOverlay">
+    <div class="overlay-card">
+      <div class="success-check">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2>ຈອງສຳເລັດແລ້ວ!</h2>
+      <div class="booking-id" id="overlayBookingId"></div>
+      <div class="qr-box" id="overlayQR"></div>
+      <div class="booking-summary" id="overlaySummary"></div>
+      <button class="btn-primary" id="btnViewTickets">ເບິ່ງປີ້ຂອງຂ້ອຍ</button>
+    </div>
+  </div>
+
+  <div class="bottom-nav" id="bottomNav">
+    <div class="nav-item active" data-tab="0">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>ໜ້າຫຼັກ</span>
+    </div>
+    <div class="nav-item" data-tab="1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20"/><path d="M12 4v16"/></svg>
+      <span>ຈອງປີ້</span>
+    </div>
+    <div class="nav-item" data-tab="2">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 17h14M5 17a2 2 0 01-2-2V9a2 2 0 012-2h1l2-3h8l2 3h1a2 2 0 012 2v6a2 2 0 01-2 2M5 17v2m14-2v2"/><circle cx="7.5" cy="14" r="1.5"/><circle cx="16.5" cy="14" r="1.5"/></svg>
+      <span>ແທັກຊີ</span>
+    </div>
+    <div class="nav-item" data-tab="3">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <span>ແຜນທີ່</span>
+    </div>
+    <div class="nav-item" data-tab="4">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>ໂປຣໄຟລ໌</span>
+      <div class="notif-badge"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  var ROUTES = [
+    { id: 1, from: 'ຫ້ວຍຊາຍ', to: 'ຫຼວງນ້ຳທາ', type: 'ລົດເມ', times: ['07:00','09:30','13:00'], price: 100000 },
+    { id: 2, from: 'ຫ້ວຍຊາຍ', to: 'ອຸດົມໄຊ', type: 'ລົດເມ', times: ['07:30','12:00'], price: 120000 },
+    { id: 3, from: 'ຫ້ວຍຊາຍ', to: 'ນະຄອນຫຼວງ', type: 'ລົດເມ', times: ['06:00','18:00'], price: 300000 },
+    { id: 4, from: 'ຫ້ວຍຊາຍ', to: 'ສະຖານີລົດໄຟນາເຕີຍ', type: 'ລົດເມ', times: ['08:00','11:00','14:00'], price: 80000 },
+    { id: 5, from: 'ຫ້ວຍຊາຍ', to: 'ສະຖານີລົດໄຟບໍເຕັນ', type: 'ລົດເມ', times: ['07:00','10:00','15:00'], price: 70000 },
+    { id: 6, from: 'ຫ້ວຍຊາຍ', to: 'ຫຼວງນ້ຳທາ', type: 'ລົດຕູ້', times: ['08:00','10:00','14:00','16:00'], price: 150000 },
+    { id: 7, from: 'ຫ້ວຍຊາຍ', to: 'ອຸດົມໄຊ', type: 'ລົດຕູ້', times: ['08:00','13:00'], price: 180000 },
+    { id: 8, from: 'ຫ້ວຍຊາຍ', to: 'ນະຄອນຫຼວງ', type: 'ລົດຕູ້', times: ['07:00','19:00'], price: 400000 },
+    { id: 9, from: 'ຫ້ວຍຊາຍ', to: 'ສະຖານີລົດໄຟນາເຕີຍ', type: 'ລົດຕູ້', times: ['08:30','11:30','15:00'], price: 120000 },
+    { id: 10, from: 'ຫ້ວຍຊາຍ', to: 'ສະຖານີລົດໄຟບໍເຕັນ', type: 'ລົດຕູ້', times: ['07:30','10:30','15:30'], price: 100000 },
+    { id: 11, from: 'ຫ້ວຍຊາຍ', to: 'ປາກແດງ', type: 'ເຮືອ', times: ['08:00','13:00'], price: 400000 },
+    { id: 12, from: 'ຫ້ວຍຊາຍ', to: 'ຫຼວງພະບາງ', type: 'ເຮືອ', times: ['08:00'], price: 600000 }
+  ];
+
+  var STOPS_INFO = [
+    { name: 'ຫ້ວຍຊາຍ', nextBus: '06:00', nextBoat: '08:00', busPrice: '—', boatPrice: '—' },
+    { name: 'ຫຼວງນ້ຳທາ', nextBus: '07:00', nextBoat: '—', busPrice: '100,000', boatPrice: '—' },
+    { name: 'ອຸດົມໄຊ', nextBus: '07:30', nextBoat: '—', busPrice: '120,000', boatPrice: '—' },
+    { name: 'ນະຄອນຫຼວງ', nextBus: '06:00', nextBoat: '—', busPrice: '300,000', boatPrice: '—' },
+    { name: 'ສະຖານີລົດໄຟນາເຕີຍ', nextBus: '08:00', nextBoat: '—', busPrice: '80,000', boatPrice: '—' },
+    { name: 'ສະຖານີລົດໄຟບໍເຕັນ', nextBus: '07:00', nextBoat: '—', busPrice: '70,000', boatPrice: '—' },
+    { name: 'ປາກແດງ', nextBus: '—', nextBoat: '08:00', busPrice: '—', boatPrice: '400,000' },
+    { name: 'ຫຼວງພະບາງ', nextBus: '—', nextBoat: '08:00', busPrice: '—', boatPrice: '600,000' }
+  ];
+
+  var SERVICES = [
+    { icon: '🚕', img: 'assets/taxi-standard.png', cls: 'taxi', title: 'ລົດແທັກຊີ', desc: 'ເອີ້ນລົດແທັກຊີ', action: 'taxi' },
+    { icon: '🚌', img: 'assets/bus.png', cls: 'bus', title: 'ປີ້ລົດເມ', desc: 'ຈອງປີ້ລົດເມ', action: 'bus' },
+    { icon: '🚐', img: 'assets/bus.png', cls: 'bus', title: 'ປີ້ລົດຕູ້', desc: 'ຈອງປີ້ລົດຕູ້', action: 'van' },
+    { icon: '🚤', img: 'assets/boat.png', cls: 'boat', title: 'ປີ້ເຮືອ', desc: 'ຈອງປີ້ເຮືອ', action: 'boat' },
+    { icon: '🗺️', img: 'assets/map-icon.png', cls: 'map', title: 'ແຜນທີ່', desc: 'ເບິ່ງແຜນທີ່', action: 'map' }
+  ];
+
+  var MENU_ITEMS = [
+    { icon: '📋', bg: '#EDE9FE', title: 'ປະຫວັດການເດີນທາງ', desc: 'ເບິ່ງການເດີນທາງທີ່ຜ່ານມາ' },
+    { icon: '⚙️', bg: '#F3F4F6', title: 'ຕັ້ງຄ່າ', desc: 'ພາສາ, ການແຈ້ງເຕືອນ' },
+    { icon: 'ℹ️', bg: '#DBEAFE', title: 'ກ່ຽວກັບ', desc: 'ເວີຊັ່ນ 1.0.0' }
+  ];
+
+  var PRESET_TICKETS = [
+    { route: '🚌 ຫ້ວຍຊາຍ → ຫຼວງນ້ຳທາ', status: 'confirmed', statusText: 'ຢືນຢັນແລ້ວ', date: '26/05/2026', time: '07:00', price: '100,000', id: 'BKT-2026-001', type: 'ລົດເມ', seats: '1' },
+    { route: '🚐 ຫ້ວຍຊາຍ → ສ.ລົດໄຟບໍເຕັນ', status: 'confirmed', statusText: 'ຢືນຢັນແລ້ວ', date: '27/05/2026', time: '10:30', price: '100,000', id: 'BKT-2026-002', type: 'ລົດຕູ້', seats: '1' },
+    { route: '🚤 ຫ້ວຍຊາຍ → ຫຼວງພະບາງ', status: 'pending', statusText: 'ລໍຖ້າ', date: '28/05/2026', time: '08:00', price: '600,000', id: 'BKT-2026-003', type: 'ເຮືອ', seats: '2' }
+  ];
+
+  var currentTab = 0;
+  var bookingCount = 2;
+  var currentFilter = '';
+
+  function formatPrice(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+
+  function el(tag, attrs, children) {
+    var node = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function(k) {
+      if (k === 'className') node.className = attrs[k];
+      else if (k === 'textContent') node.textContent = attrs[k];
+      else if (k.indexOf('on') === 0) node.addEventListener(k.slice(2).toLowerCase(), attrs[k]);
+      else node.setAttribute(k, attrs[k]);
+    });
+    if (children) children.forEach(function(c) {
+      if (typeof c === 'string') node.appendChild(document.createTextNode(c));
+      else if (c) node.appendChild(c);
+    });
+    return node;
+  }
+
+  function updateStatusTime() {
+    var now = new Date();
+    document.getElementById('statusTime').textContent = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
+  }
+
+  // Splash
+  setTimeout(function() {
+    document.getElementById('splash').classList.add('splash-fade');
+    setTimeout(function() {
+      document.getElementById('splash').style.display = 'none';
+      document.getElementById('screenHome').classList.add('active');
+      document.getElementById('statusBar').classList.add('dark');
+      renderRoutes();
+      buildServiceGrid();
+      buildProfileTickets();
+      buildProfileMenu();
+      generateMiniQR('ticketQR-0', 'BKT-2026-001');
+      generateMiniQR('ticketQR-1', 'BKT-2026-002');
+      updateStatusTime();
+    }, 500);
+  }, 2000);
+
+  // Navigation
+  var screens = ['screenHome', 'screenBooking', 'screenTaxi', 'screenMap', 'screenProfile'];
+
+  function switchTab(idx) {
+    currentTab = idx;
+    screens.forEach(function(s) { document.getElementById(s).classList.remove('active'); });
+    document.getElementById(screens[idx]).classList.add('active');
+    var navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(function(item, i) { item.classList.toggle('active', i === idx); });
+    var bar = document.getElementById('statusBar');
+    bar.classList.toggle('dark', idx === 0);
+    bar.style.color = idx === 0 ? '' : 'white';
+  }
+
+  document.querySelectorAll('.nav-item').forEach(function(item) {
+    item.addEventListener('click', function() { switchTab(parseInt(item.dataset.tab)); });
+  });
+
+  document.querySelectorAll('.back-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      switchTab(parseInt(btn.dataset.back));
+    });
+  });
+
+  // Service grid
+  function buildServiceGrid() {
+    var grid = document.getElementById('serviceGrid');
+    SERVICES.forEach(function(s) {
+      var card = el('div', { className: 'service-card' }, [
+        s.img
+          ? el('div', { className: 'service-icon ' + s.cls }, [el('img', { src: s.img, alt: s.title })])
+          : el('div', { className: 'service-icon ' + s.cls, textContent: s.icon }),
+        el('h3', { textContent: s.title }),
+        el('p', { textContent: s.desc })
+      ]);
+      card.addEventListener('click', function() {
+        if (s.action === 'taxi') { switchTab(2); }
+        else if (s.action === 'bus') { switchTab(1); document.getElementById('bookType').value = 'ລົດເມ'; updateBookingForm(); }
+        else if (s.action === 'van') { switchTab(1); document.getElementById('bookType').value = 'ລົດຕູ້'; updateBookingForm(); }
+        else if (s.action === 'boat') { switchTab(1); document.getElementById('bookType').value = 'ເຮືອ'; updateBookingForm(); }
+        else if (s.action === 'map') switchTab(3);
+      });
+      grid.appendChild(card);
+    });
+  }
+
+  // Routes
+  function renderRoutes(filter, typeFilter) {
+    var list = document.getElementById('routeList');
+    while (list.firstChild) list.removeChild(list.firstChild);
+
+    var filtered = ROUTES.filter(function(r) {
+      if (r.type === 'ເຮືອ') return false;
+      if (filter && !(r.from.indexOf(filter) >= 0 || r.to.indexOf(filter) >= 0)) return false;
+      if (typeFilter && r.type !== typeFilter) return false;
+      return true;
+    });
+
+    filtered.forEach(function(r) {
+      var badgeCls = r.type === 'ລົດເມ' ? 'badge-bus' : r.type === 'ລົດຕູ້' ? 'badge-van' : 'badge-boat';
+      var badgeIcon = r.type === 'ລົດເມ' ? '🚌 ' : r.type === 'ລົດຕູ້' ? '🚐 ' : '🚤 ';
+      var badge = el('span', { className: 'route-type-badge ' + badgeCls }, [
+        document.createTextNode(badgeIcon + r.type)
+      ]);
+
+      var timesDiv = el('div', { className: 'route-times' });
+      r.times.forEach(function(t) { timesDiv.appendChild(el('span', { className: 'time-chip', textContent: t })); });
+
+      var priceDiv = el('div', { className: 'route-price' }, [
+        document.createTextNode(formatPrice(r.price) + ' '),
+        el('span', { className: 'route-price-unit', textContent: 'ກີບ' })
+      ]);
+
+      var btn = el('button', { className: 'route-book-btn', textContent: 'ຈອງປີ້' });
+      btn.addEventListener('click', function(e) { e.stopPropagation(); bookRoute(r.id); });
+
+      var card = el('div', { className: 'route-card' }, [
+        el('div', { className: 'route-top' }, [el('div', null, [badge])]),
+        el('div', { className: 'route-name' }, [
+          document.createTextNode(r.from + ' '),
+          el('span', { className: 'route-arrow', textContent: '→' }),
+          document.createTextNode(' ' + r.to)
+        ]),
+        el('div', { className: 'route-details' }, [timesDiv, priceDiv]),
+        btn
+      ]);
+      card.addEventListener('click', function() { bookRoute(r.id); });
+      list.appendChild(card);
+    });
+  }
+
+  document.getElementById('searchInput').addEventListener('input', function() {
+    renderRoutes(this.value.trim(), currentFilter);
+  });
+
+  function filterByType(type) {
+    currentFilter = type;
+    renderRoutes('', type);
+    document.getElementById('searchInput').value = '';
+  }
+
+  // Booking
+  function bookRoute(id) {
+    var route = ROUTES.find(function(r) { return r.id === id; });
+    if (!route) return;
+    switchTab(1);
+    document.getElementById('bookType').value = route.type;
+    document.getElementById('bookFrom').value = route.from;
+    document.getElementById('bookTo').value = route.to;
+    document.getElementById('bookDate').value = new Date().toISOString().split('T')[0];
+    updateBookingForm();
+  }
+
+  function updateBookingForm() {
+    var type = document.getElementById('bookType').value;
+    var from = document.getElementById('bookFrom').value;
+    var to = document.getElementById('bookTo').value;
+    var timeSelect = document.getElementById('bookTime');
+
+    while (timeSelect.firstChild) timeSelect.removeChild(timeSelect.firstChild);
+
+    var route = ROUTES.find(function(r) { return r.type === type && r.from === from && r.to === to; });
+    if (route) {
+      route.times.forEach(function(t) {
+        var opt = document.createElement('option');
+        opt.value = t; opt.textContent = t;
+        timeSelect.appendChild(opt);
+      });
+    } else {
+      var opt = document.createElement('option');
+      opt.value = ''; opt.textContent = 'ເລືອກສາຍທາງກ່ອນ';
+      timeSelect.appendChild(opt);
+    }
+    updatePrice();
+  }
+
+  function updatePrice() {
+    var type = document.getElementById('bookType').value;
+    var from = document.getElementById('bookFrom').value;
+    var to = document.getElementById('bookTo').value;
+    var seats = parseInt(document.getElementById('bookSeats').value) || 1;
+    var route = ROUTES.find(function(r) { return r.type === type && r.from === from && r.to === to; });
+    document.getElementById('totalPrice').textContent = formatPrice(route ? route.price * seats : 0);
+  }
+
+  ['bookType', 'bookFrom', 'bookTo'].forEach(function(id) {
+    document.getElementById(id).addEventListener('change', updateBookingForm);
+  });
+  document.getElementById('bookSeats').addEventListener('change', updatePrice);
+
+  document.getElementById('btnConfirmBooking').addEventListener('click', function() {
+    var type = document.getElementById('bookType').value;
+    var from = document.getElementById('bookFrom').value;
+    var to = document.getElementById('bookTo').value;
+    var date = document.getElementById('bookDate').value;
+    var time = document.getElementById('bookTime').value;
+    var seats = document.getElementById('bookSeats').value;
+
+    document.querySelectorAll('.form-error').forEach(function(e) { e.classList.remove('show'); });
+
+    var hasError = false;
+    if (!type) { document.getElementById('errType').classList.add('show'); hasError = true; }
+    if (!from) { document.getElementById('errFrom').classList.add('show'); hasError = true; }
+    if (!to) { document.getElementById('errTo').classList.add('show'); hasError = true; }
+    if (from && to && from === to) { document.getElementById('errSame').classList.add('show'); hasError = true; }
+    if (!date) { document.getElementById('errDate').classList.add('show'); hasError = true; }
+    if (!time) { document.getElementById('errTime').classList.add('show'); hasError = true; }
+    if (hasError) return;
+
+    var route = ROUTES.find(function(r) { return r.type === type && r.from === from && r.to === to; });
+    var total = route ? route.price * parseInt(seats) : 0;
+    bookingCount++;
+    var bookingId = 'BKT-2026-' + String(bookingCount).padStart(3, '0');
+
+    document.getElementById('overlayBookingId').textContent = bookingId;
+
+    var summary = document.getElementById('overlaySummary');
+    while (summary.firstChild) summary.removeChild(summary.firstChild);
+
+    var formattedDate = date.split('-').reverse().join('/');
+    var rows = [
+      ['ສາຍທາງ', from + ' → ' + to],
+      ['ປະເພດ', (type === 'ລົດເມ' ? '🚌 ລົດເມ' : '🚤 ເຮືອ')],
+      ['ວັນທີ', formattedDate],
+      ['ເວລາ', time],
+      ['ບ່ອນນັ່ງ', seats],
+      ['ລາຄາລວມ', formatPrice(total) + ' ກີບ']
+    ];
+    rows.forEach(function(pair) {
+      var row = el('div', { className: 'booking-summary-row' }, [
+        el('span', { className: 'label', textContent: pair[0] }),
+        el('span', { textContent: pair[1] })
+      ]);
+      summary.appendChild(row);
+    });
+
+    generateMiniQR('overlayQR', bookingId);
+    document.getElementById('successOverlay').classList.add('show');
+  });
+
+  document.getElementById('btnViewTickets').addEventListener('click', function() {
+    document.getElementById('successOverlay').classList.remove('show');
+    switchTab(4);
+  });
+
+  // Taxi — Google Maps-like tap-to-pin
+  var taxiCarType = 'standard';
+  var taxiMapStep = 'pickup';
+  var taxiPinA = null;
+  var taxiPinB = null;
+
+  var TAXI_NEARBY = [
+    { x: 30, y: 18, name: 'ຕະຫຼາດຫ້ວຍຊາຍ' },
+    { x: 68, y: 18, name: 'ດ່ານຫ້ວຍຊາຍ' },
+    { x: 88, y: 30, name: 'ສວນສາທາລະນະ' },
+    { x: 30, y: 52, name: 'ໂຮງໝໍແຂວງ' },
+    { x: 55, y: 52, name: 'ຫ້ອງການແຂວງ' },
+    { x: 18, y: 78, name: 'ທ່າເຮືອຫ້ວຍຊາຍ' },
+    { x: 55, y: 78, name: 'ໂຮງຮຽນ' },
+    { x: 82, y: 72, name: 'ສະໜາມບິນຫ້ວຍຊາຍ' }
+  ];
+
+  function findNearestPlace(xPct, yPct) {
+    var closest = null;
+    var minDist = Infinity;
+    TAXI_NEARBY.forEach(function(p) {
+      var d = Math.sqrt(Math.pow(p.x - xPct, 2) + Math.pow(p.y - yPct, 2));
+      if (d < minDist) { minDist = d; closest = p; }
+    });
+    return closest ? closest.name : 'ຈຸດທີ່ເລືອກ';
+  }
+
+  function calcTaxiDistance() {
+    if (!taxiPinA || !taxiPinB) return 0;
+    var dx = taxiPinB.x - taxiPinA.x;
+    var dy = taxiPinB.y - taxiPinA.y;
+    var pxDist = Math.sqrt(dx * dx + dy * dy);
+    return Math.max(0.5, (pxDist / 15).toFixed(1));
+  }
+
+  function updateTaxiPrice() {
+    var km = parseFloat(calcTaxiDistance());
+    var base = taxiCarType === 'vip' ? 20000 : 10000;
+    var perKm = taxiCarType === 'vip' ? 5000 : 3000;
+    var price = Math.round((base + km * perKm) / 1000) * 1000;
+    document.getElementById('taxiPrice').textContent = formatPrice(price);
+  }
+
+  function drawTaxiLine() {
+    var line = document.getElementById('taxiRouteLine');
+    if (taxiPinA && taxiPinB) {
+      line.setAttribute('x1', taxiPinA.x + '%');
+      line.setAttribute('y1', taxiPinA.y + '%');
+      line.setAttribute('x2', taxiPinB.x + '%');
+      line.setAttribute('y2', taxiPinB.y + '%');
+      line.style.display = 'block';
+    } else {
+      line.style.display = 'none';
+    }
+  }
+
+  function resetTaxiMap() {
+    taxiMapStep = 'pickup';
+    taxiPinA = null;
+    taxiPinB = null;
+    document.getElementById('taxiPinPickup').style.display = 'none';
+    document.getElementById('taxiPinDropoff').style.display = 'none';
+    document.getElementById('taxiRouteLine').style.display = 'none';
+    document.getElementById('taxiDistBadge').classList.remove('show');
+    document.getElementById('taxiMapReset').classList.remove('show');
+    document.getElementById('taxiPickup').value = '';
+    document.getElementById('taxiDropoff').value = '';
+    var mode = document.getElementById('taxiMapMode');
+    mode.textContent = '📍 ແຕະແຜນທີ່ເລືອກຈຸດຮັບ';
+    mode.className = 'taxi-map-mode pickup-mode';
+    updateTaxiPrice();
+  }
+
+  document.getElementById('taxiMap').addEventListener('click', function(e) {
+    if (e.target.closest('.taxi-map-reset')) return;
+    if (taxiMapStep === 'done') return;
+    var rect = this.getBoundingClientRect();
+    var xPct = ((e.clientX - rect.left) / rect.width) * 100;
+    var yPct = ((e.clientY - rect.top) / rect.height) * 100;
+
+    if (taxiMapStep === 'pickup') {
+      taxiPinA = { x: xPct, y: yPct };
+      var pin = document.getElementById('taxiPinPickup');
+      pin.style.left = xPct + '%';
+      pin.style.top = yPct + '%';
+      pin.style.display = 'block';
+      document.getElementById('taxiPickup').value = findNearestPlace(xPct, yPct);
+      taxiMapStep = 'dropoff';
+      var mode = document.getElementById('taxiMapMode');
+      mode.textContent = '📍 ແຕະແຜນທີ່ເລືອກຈຸດສົ່ງ';
+      mode.className = 'taxi-map-mode dropoff-mode';
+      document.getElementById('taxiMapReset').classList.add('show');
+    } else if (taxiMapStep === 'dropoff') {
+      taxiPinB = { x: xPct, y: yPct };
+      var pin = document.getElementById('taxiPinDropoff');
+      pin.style.left = xPct + '%';
+      pin.style.top = yPct + '%';
+      pin.style.display = 'block';
+      document.getElementById('taxiDropoff').value = findNearestPlace(xPct, yPct);
+      drawTaxiLine();
+      var km = calcTaxiDistance();
+      var badge = document.getElementById('taxiDistBadge');
+      badge.textContent = '📏 ' + km + ' ກມ';
+      badge.classList.add('show');
+      taxiMapStep = 'done';
+      var mode = document.getElementById('taxiMapMode');
+      mode.textContent = '✅ ພ້ອມເອີ້ນແທັກຊີ';
+      mode.className = 'taxi-map-mode done-mode';
+      updateTaxiPrice();
+    }
+  });
+
+  document.getElementById('taxiMapReset').addEventListener('click', function(e) {
+    e.stopPropagation();
+    resetTaxiMap();
+  });
+
+  document.querySelectorAll('.taxi-car-card').forEach(function(card) {
+    card.addEventListener('click', function() {
+      document.querySelectorAll('.taxi-car-card').forEach(function(c) { c.classList.remove('active'); });
+      card.classList.add('active');
+      taxiCarType = card.dataset.type;
+      updateTaxiPrice();
+    });
+  });
+
+  document.getElementById('btnCallTaxi').addEventListener('click', function() {
+    var btn = document.getElementById('btnCallTaxi');
+    btn.disabled = true;
+    btn.textContent = 'ກຳລັງຊອກຫາ...';
+    var status = document.getElementById('taxiStatus');
+    status.classList.add('show');
+    var progress = document.getElementById('taxiProgressFill');
+
+    setTimeout(function() {
+      document.getElementById('taxiStep1').classList.add('active');
+      progress.style.width = '33%';
+    }, 300);
+    setTimeout(function() {
+      document.getElementById('taxiStep1').classList.remove('active');
+      document.getElementById('taxiStep1').classList.add('done');
+      document.getElementById('taxiStep2').classList.add('active');
+      document.getElementById('taxiDriverCard').classList.add('show');
+      btn.textContent = 'ຄົນຂັບກຳລັງມາ...';
+      progress.style.width = '66%';
+    }, 2500);
+    setTimeout(function() {
+      document.getElementById('taxiStep2').classList.remove('active');
+      document.getElementById('taxiStep2').classList.add('done');
+      document.getElementById('taxiStep3').classList.add('active');
+      btn.textContent = '✅ ຄົນຂັບຮອດແລ້ວ!';
+      btn.style.background = '#16A34A';
+      progress.style.width = '100%';
+    }, 5000);
+  });
+
+  // Map
+  document.querySelectorAll('.map-marker').forEach(function(marker) {
+    marker.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var idx = parseInt(marker.dataset.stop);
+      var info = STOPS_INFO[idx];
+      var popup = document.getElementById('mapPopup');
+      document.getElementById('popupTitle').textContent = info.name;
+
+      var content = document.getElementById('popupContent');
+      while (content.firstChild) content.removeChild(content.firstChild);
+
+      var popupRows = [
+        '🚌 ລົດເມຖ້ຽວຕໍ່ໄປ: ' + info.nextBus,
+        '🚤 ເຮືອຖ້ຽວຕໍ່ໄປ: ' + info.nextBoat,
+        '💰 ລົດເມ: ' + info.busPrice + ' ກີບ',
+        '💰 ເຮືອ: ' + info.boatPrice + ' ກີບ'
+      ];
+      popupRows.forEach(function(text) {
+        content.appendChild(el('div', { className: 'map-popup-row', textContent: text }));
+      });
+
+      var container = document.getElementById('mapContainer').getBoundingClientRect();
+      var rect = marker.getBoundingClientRect();
+      var left = rect.left - container.left + 40;
+      var top = rect.top - container.top;
+
+      popup.style.left = '0px';
+      popup.style.top = '0px';
+      popup.classList.add('show');
+
+      var popupRect = popup.getBoundingClientRect();
+      if (left + popupRect.width > container.width - 8) {
+        left = rect.left - container.left - popupRect.width - 8;
+      }
+      if (top + popupRect.height > container.height - 8) {
+        top = container.height - popupRect.height - 8;
+      }
+      if (left < 8) left = 8;
+      if (top < 8) top = 8;
+
+      popup.style.left = left + 'px';
+      popup.style.top = top + 'px';
+    });
+  });
+
+  document.getElementById('mapPopupClose').addEventListener('click', function() {
+    document.getElementById('mapPopup').classList.remove('show');
+  });
+
+  document.getElementById('mapContainer').addEventListener('click', function(e) {
+    if (!e.target.closest('.map-marker') && !e.target.closest('.map-popup')) {
+      document.getElementById('mapPopup').classList.remove('show');
+    }
+  });
+
+  // Profile tickets
+  function buildProfileTickets() {
+    var container = document.getElementById('myTickets');
+    PRESET_TICKETS.forEach(function(t, i) {
+      var statusClass = 'status-' + t.status;
+      var card = el('div', { className: 'ticket-card' }, [
+        el('div', { className: 'ticket-card-header' }, [
+          el('span', { className: 'ticket-route', textContent: t.route }),
+          el('span', { className: 'ticket-status ' + statusClass, textContent: t.statusText })
+        ]),
+        el('div', { className: 'ticket-card-body' }, [
+          el('div', { className: 'ticket-detail', textContent: '📅 ' + t.date }),
+          el('div', { className: 'ticket-detail', textContent: '🕐 ' + t.time }),
+          el('div', { className: 'ticket-detail', textContent: '💰 ' + t.price + ' ກີບ' })
+        ]),
+        el('div', { className: 'ticket-expand' }, [
+          el('div', { className: 'ticket-expand-inner' }, [
+            el('div', { className: 'ticket-qr', id: 'ticketQR-' + i }),
+            el('div', { className: 'ticket-full-info' }, [
+              el('p', null, [el('strong', { textContent: 'ID: ' }), document.createTextNode(t.id)]),
+              el('p', null, [el('strong', { textContent: 'ປະເພດ: ' }), document.createTextNode(t.type)]),
+              el('p', null, [el('strong', { textContent: 'ບ່ອນນັ່ງ: ' }), document.createTextNode(t.seats)]),
+              el('p', null, [el('strong', { textContent: 'ຜູ້ໂດຍສານ: ' }), document.createTextNode('ສົມໃຈ ວົງສະຫວັນ')])
+            ])
+          ])
+        ])
+      ]);
+      card.addEventListener('click', function() {
+        var expand = card.querySelector('.ticket-expand');
+        expand.classList.toggle('open');
+      });
+      container.appendChild(card);
+    });
+  }
+
+  function buildProfileMenu() {
+    var menu = document.getElementById('profileMenu');
+    MENU_ITEMS.forEach(function(m) {
+      var iconDiv = el('div', { className: 'menu-icon', textContent: m.icon });
+      iconDiv.style.background = m.bg;
+      menu.appendChild(el('div', { className: 'menu-item' }, [
+        iconDiv,
+        el('div', { className: 'menu-item-text' }, [
+          el('h4', { textContent: m.title }),
+          el('p', { textContent: m.desc })
+        ]),
+        el('span', { className: 'menu-chevron', textContent: '›' })
+      ]));
+    });
+  }
+
+  // QR generator
+  function generateMiniQR(containerId, text) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+
+    var size = 80;
+    var modules = 21;
+    var cellSize = size / modules;
+    var hash = 0;
+    for (var i = 0; i < text.length; i++) {
+      hash = ((hash << 5) - hash) + text.charCodeAt(i);
+      hash |= 0;
+    }
+
+    var ns = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('width', size);
+    svg.setAttribute('height', size);
+    svg.setAttribute('viewBox', '0 0 ' + size + ' ' + size);
+
+    var bg = document.createElementNS(ns, 'rect');
+    bg.setAttribute('width', size); bg.setAttribute('height', size); bg.setAttribute('fill', 'white');
+    svg.appendChild(bg);
+
+    function drawFinder(x, y) {
+      var s = cellSize;
+      var rects = [
+        [x*s, y*s, 7*s, 7*s, 'black'],
+        [(x+1)*s, (y+1)*s, 5*s, 5*s, 'white'],
+        [(x+2)*s, (y+2)*s, 3*s, 3*s, 'black']
+      ];
+      rects.forEach(function(r) {
+        var rect = document.createElementNS(ns, 'rect');
+        rect.setAttribute('x', r[0]); rect.setAttribute('y', r[1]);
+        rect.setAttribute('width', r[2]); rect.setAttribute('height', r[3]);
+        rect.setAttribute('fill', r[4]);
+        svg.appendChild(rect);
+      });
+    }
+
+    drawFinder(0, 0);
+    drawFinder(14, 0);
+    drawFinder(0, 14);
+
+    var seed = Math.abs(hash);
+    for (var row = 0; row < modules; row++) {
+      for (var col = 0; col < modules; col++) {
+        if ((row < 8 && col < 8) || (row < 8 && col > 12) || (row > 12 && col < 8)) continue;
+        seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+        if (seed % 3 !== 0) {
+          var rect = document.createElementNS(ns, 'rect');
+          rect.setAttribute('x', col * cellSize); rect.setAttribute('y', row * cellSize);
+          rect.setAttribute('width', cellSize); rect.setAttribute('height', cellSize);
+          rect.setAttribute('fill', 'black');
+          svg.appendChild(rect);
+        }
+      }
+    }
+
+    while (container.firstChild) container.removeChild(container.firstChild);
+    container.appendChild(svg);
+  }
+
+  // Init date
+  document.getElementById('bookDate').value = new Date().toISOString().split('T')[0];
+})();
+</script>
+</body>
+</html>
